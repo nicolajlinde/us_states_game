@@ -11,21 +11,28 @@ turtle.shape(image)
 state = State()
 
 data = pandas.read_csv("50_states.csv")
+all_states = data.state.to_list()
 state_len = len(data.state)
 correct_guesses = []
 
 game_is_on = True
 while game_is_on:
-    guess = screen.textinput(title=f"{state.score}/{state_len}Guess the State", prompt="What's another state's name?").title()
+    guess = screen.textinput(title=f"{len(correct_guesses)}/{state_len}Guess the State", prompt="What's another state's name?").title()
 
-    for i in data.state:
-        if guess == i:
-            row = data[data.state == i]
-            state.write_state_name(i, float(row.x), float(row.y))
-            correct_guesses.append(guess)
+    if guess == "Quit" or guess == "Exit":
+        game_is_on = False
+        screen.bye()
+    elif guess in correct_guesses:
+        print("You've already guessed that. Try again.")
+    elif guess in all_states:
+        row = data[data.state == guess]
+        state.write_state_name(guess, float(row.x), float(row.y))
+        correct_guesses.append(guess)
+    else:
+        print("Sorry, there aren't any states of that name. Maybe you misspelled or forgot an uppercase letter?")
 
-        if len(correct_guesses) == state_len:
-            print("Congratulation you won! You guessed all 50 states.")
-            game_is_on = False
+    if len(correct_guesses) >= state_len:
+        print("Congratulation you won! You guessed all 50 states.")
+        game_is_on = False
 
-turtle.mainloop()
+turtle.exitonclick()
