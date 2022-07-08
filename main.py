@@ -14,14 +14,25 @@ data = pandas.read_csv("50_states.csv")
 all_states = data.state.to_list()
 state_len = len(data.state)
 correct_guesses = []
+missing_states = []
 
 game_is_on = True
 while game_is_on:
     guess = screen.textinput(title=f"{len(correct_guesses)}/{state_len}Guess the State", prompt="What's another state's name?").title()
 
     if guess == "Quit" or guess == "Exit":
-        game_is_on = False
-        screen.bye()
+        for i in all_states:
+            if i not in correct_guesses:
+                missing_states.append(i)
+
+        guess_dict = {
+            "Guesses": [correct_guesses],
+            "Missing States": [missing_states]
+        }
+
+        guess_data = pandas.DataFrame(guess_dict)
+        guess_data.to_csv("correct_guess_data.csv")
+        break
     elif guess in correct_guesses:
         print("You've already guessed that. Try again.")
     elif guess in all_states:
